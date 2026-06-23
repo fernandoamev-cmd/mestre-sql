@@ -16,7 +16,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <style>
-        /* ========== ESTILOS (idênticos aos anteriores) ========== */
+        /* ========== ESTILOS ========== */
         * {
             margin: 0;
             padding: 0;
@@ -937,7 +937,7 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ============================================================
-        // 2. LISTA DE DESAFIOS SQL (5 EXEMPLOS)
+        // 2. LISTA DE DESAFIOS SQL (5 EXEMPLOS – ADICIONE MAIS)
         // ============================================================
         const LISTA_DESAFIOS = [
             {
@@ -1530,6 +1530,7 @@
                     return;
                 }
 
+                // Garantir que resultadoUsuario tenha pelo menos um item
                 if (!resultadoUsuario || resultadoUsuario.length === 0) {
                     outputEl.textContent = "⚠️ Sua consulta não retornou resultados.";
                     btn.disabled = false;
@@ -1537,7 +1538,8 @@
                     return;
                 }
 
-                // Extrair valores (ignorando nomes das colunas)
+                // Extrair colunas e valores do usuário
+                const colsUsuario = resultadoUsuario[0].columns;
                 const valsUsuario = resultadoUsuario[0].values;
 
                 // Executar gabarito
@@ -1556,11 +1558,10 @@
                 }
                 const valsGabarito = resultadoGabarito[0].values;
 
-                // --- COMPARAÇÃO EXATA DOS VALORES (como arrays) ---
+                // --- COMPARAÇÃO APENAS DOS VALORES ---
                 const iguais = JSON.stringify(valsUsuario) === JSON.stringify(valsGabarito);
 
-                // --- EXIBIÇÃO BONITA ---
-                const colsUsuario = resultadoUsuario[0].columns;
+                // --- EXIBIÇÃO BONITA PARA O ALUNO ---
                 let texto = "📊 Resultado da sua consulta:\n";
                 if (colsUsuario.length > 0) {
                     texto += "┌" + "─".repeat(colsUsuario.join(" | ").length + 2) + "┐\n";
@@ -1612,23 +1613,23 @@
                     }
                 } else {
                     // INCORRETO
+                    let textoEsperado = "📊 Resultado esperado:\n";
                     const colsEsp = resultadoGabarito[0].columns;
                     const valsEsp = resultadoGabarito[0].values;
-                    let textoEsp = "📊 Resultado esperado:\n";
                     if (colsEsp.length > 0) {
-                        textoEsp += "┌" + "─".repeat(colsEsp.join(" | ").length + 2) + "┐\n";
-                        textoEsp += "│ " + colsEsp.join(" | ") + " │\n";
-                        textoEsp += "├" + "─".repeat(colsEsp.join(" | ").length + 2) + "┤\n";
+                        textoEsperado += "┌" + "─".repeat(colsEsp.join(" | ").length + 2) + "┐\n";
+                        textoEsperado += "│ " + colsEsp.join(" | ") + " │\n";
+                        textoEsperado += "├" + "─".repeat(colsEsp.join(" | ").length + 2) + "┤\n";
                         if (valsEsp.length > 0) {
                             valsEsp.forEach(row => {
-                                textoEsp += "│ " + row.join(" | ") + " │\n";
+                                textoEsperado += "│ " + row.join(" | ") + " │\n";
                             });
                         } else {
-                            textoEsp += "│ (nenhuma linha) │\n";
+                            textoEsperado += "│ (nenhuma linha) │\n";
                         }
-                        textoEsp += "└" + "─".repeat(colsEsp.join(" | ").length + 2) + "┘\n";
+                        textoEsperado += "└" + "─".repeat(colsEsp.join(" | ").length + 2) + "┘\n";
                     }
-                    alert(`❌ Resultado incorreto.\n\nSua saída:\n${texto}\n\nSaída esperada:\n${textoEsp}`);
+                    alert(`❌ Resultado incorreto.\n\nSua saída:\n${texto}\n\nSaída esperada:\n${textoEsperado}`);
                 }
             } catch (erro) {
                 console.error(erro);
@@ -1706,7 +1707,7 @@
         }
 
         // ============================================================
-        // 12. CRIAR TURMA – CORRIGIDA!
+        // 12. FUNÇÃO CRIAR TURMA – CORRIGIDA!
         // ============================================================
         async function criarTurma() {
             const nome = document.getElementById("input-nova-turma").value.trim().toUpperCase();
